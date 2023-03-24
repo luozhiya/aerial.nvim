@@ -71,7 +71,7 @@ M.elixir = {
   postprocess = function(bufnr, item, match)
     local identifier = (utils.get_at_path(match, "identifier") or {}).node
     if identifier then
-      local name = vim.treesitter.query.get_node_text(identifier, bufnr) or "<parse error>"
+      local name = vim.treesitter.get_node_text(identifier, bufnr) or "<parse error>"
       if name == "defp" then
         item.scope = "private"
       end
@@ -83,7 +83,7 @@ M.elixir = {
         return false
       elseif name == "defimpl" then
         local protocol = (utils.get_at_path(match, "protocol") or {}).node
-        local protocol_name = vim.treesitter.query.get_node_text(protocol, bufnr) or "<parse error>"
+        local protocol_name = vim.treesitter.get_node_text(protocol, bufnr) or "<parse error>"
         item.name = string.format("%s > %s", item.name, protocol_name)
       elseif name == "test" then
         item.name = string.format("test %s", item.name)
@@ -124,7 +124,7 @@ M.go = {
   postprocess = function(bufnr, item, match)
     local receiver = (utils.get_at_path(match, "receiver") or {}).node
     if receiver then
-      local receiver_text = vim.treesitter.query.get_node_text(receiver, bufnr) or "<parse error>"
+      local receiver_text = vim.treesitter.get_node_text(receiver, bufnr) or "<parse error>"
       item.name = string.format("%s %s", receiver_text, item.name)
     end
     return true
@@ -161,7 +161,7 @@ M.help = {
     if vim.startswith(match.type.node:type(), "h") then
       while node and node:type() == "word" do
         local row, col = node:start()
-        table.insert(pieces, 1, vim.treesitter.query.get_node_text(node, bufnr))
+        table.insert(pieces, 1, vim.treesitter.get_node_text(node, bufnr))
         node = node:prev_sibling()
         item.lnum = row + 1
         item.col = col
@@ -192,9 +192,9 @@ M.rust = {
     if item.kind == "Class" then
       local trait_node = (utils.get_at_path(match, "trait") or {}).node
       local type = (utils.get_at_path(match, "rust_type") or {}).node
-      local name = vim.treesitter.query.get_node_text(type, bufnr) or "<parse error>"
+      local name = vim.treesitter.get_node_text(type, bufnr) or "<parse error>"
       if trait_node then
-        local trait = vim.treesitter.query.get_node_text(trait_node, bufnr) or "<parse error>"
+        local trait = vim.treesitter.get_node_text(trait_node, bufnr) or "<parse error>"
         name = string.format("%s > %s", name, trait)
       end
       item.name = name
@@ -206,7 +206,7 @@ M.ruby = {
   postprocess = function(bufnr, item, match)
     local method = (utils.get_at_path(match, "method") or {}).node
     if method then
-      local fn = vim.treesitter.query.get_node_text(method, bufnr) or "<parse error>"
+      local fn = vim.treesitter.get_node_text(method, bufnr) or "<parse error>"
       if fn ~= item.name then
         item.name = fn .. " " .. item.name
       end
@@ -218,7 +218,7 @@ M.lua = {
   postprocess = function(bufnr, item, match)
     local method = (utils.get_at_path(match, "method") or {}).node
     if method then
-      local fn = vim.treesitter.query.get_node_text(method, bufnr) or "<parse error>"
+      local fn = vim.treesitter.get_node_text(method, bufnr) or "<parse error>"
       if fn == "it" or fn == "describe" then
         item.name = fn .. " " .. string.sub(item.name, 2, string.len(item.name) - 1)
       end
@@ -232,11 +232,11 @@ M.javascript = {
     local modifier = (utils.get_at_path(match, "modifier") or {}).node
     local string = (utils.get_at_path(match, "string") or {}).node
     if method and string then
-      local fn = vim.treesitter.query.get_node_text(method, bufnr) or "<parse error>"
+      local fn = vim.treesitter.get_node_text(method, bufnr) or "<parse error>"
       if modifier then
-        fn = fn .. "." .. (vim.treesitter.query.get_node_text(modifier, bufnr) or "<parse error>")
+        fn = fn .. "." .. (vim.treesitter.get_node_text(modifier, bufnr) or "<parse error>")
       end
-      local str = vim.treesitter.query.get_node_text(string, bufnr) or "<parse error>"
+      local str = vim.treesitter.get_node_text(string, bufnr) or "<parse error>"
       item.name = fn .. " " .. str
     end
   end,
@@ -263,7 +263,7 @@ local function c_postprocess(bufnr, item, match)
         break
       end
     end
-    item.name = vim.treesitter.query.get_node_text(root, bufnr) or "<parse error>"
+    item.name = vim.treesitter.get_node_text(root, bufnr) or "<parse error>"
   end
 end
 
@@ -292,11 +292,11 @@ M.typescript = {
     local modifier = (utils.get_at_path(match, "modifier") or {}).node
     local string = (utils.get_at_path(match, "string") or {}).node
     if method and string then
-      local fn = vim.treesitter.query.get_node_text(method, bufnr) or "<parse error>"
+      local fn = vim.treesitter.get_node_text(method, bufnr) or "<parse error>"
       if modifier then
-        fn = fn .. "." .. (vim.treesitter.query.get_node_text(modifier, bufnr) or "<parse error>")
+        fn = fn .. "." .. (vim.treesitter.get_node_text(modifier, bufnr) or "<parse error>")
       end
-      local str = vim.treesitter.query.get_node_text(string, bufnr) or "<parse error>"
+      local str = vim.treesitter.get_node_text(string, bufnr) or "<parse error>"
       item.name = fn .. " " .. str
     end
   end,
